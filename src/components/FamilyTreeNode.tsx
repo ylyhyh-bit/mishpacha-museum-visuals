@@ -24,6 +24,8 @@ interface FamilyTreeNodeProps {
   isHighlighted?: boolean;
   searchTerm?: string;
   children?: React.ReactNode;
+  lazy?: boolean;
+  animationDelay?: number;
 }
 
 export const FamilyTreeNode: React.FC<FamilyTreeNodeProps> = ({
@@ -31,7 +33,9 @@ export const FamilyTreeNode: React.FC<FamilyTreeNodeProps> = ({
   onHover,
   isHighlighted,
   searchTerm,
-  children
+  children,
+  lazy = false,
+  animationDelay = 0
 }) => {
   return (
     <div
@@ -48,6 +52,8 @@ export const FamilyTreeNode: React.FC<FamilyTreeNodeProps> = ({
           onHover={onHover}
           isHighlighted={isHighlighted}
           searchTerm={searchTerm}
+          lazy={lazy}
+          animationDelay={animationDelay}
         />
         
         {/* Connection points for family tree lines */}

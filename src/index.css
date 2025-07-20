@@ -64,6 +64,8 @@
     /* Smooth transitions */
     --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-spring: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    --transition-micro: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-gentle: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 
     --radius: 0.75rem;
 
@@ -153,17 +155,46 @@
 }
 
 @layer components {
-  /* Museum card styles */
+  /* Touch-friendly mobile interactions */
+  .touch-target {
+    @apply min-h-[44px] min-w-[44px] flex items-center justify-center;
+    touch-action: manipulation;
+  }
+
+  .mobile-card {
+    @apply transform transition-all duration-300 active:scale-95;
+    touch-action: manipulation;
+  }
+
+  /* Optimized performance classes */
+  .gpu-accelerated {
+    will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+  }
+
+  .smooth-scroll {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+  /* Enhanced museum card styles with smooth animations */
   .museum-card {
     @apply relative bg-card border border-border rounded-xl overflow-hidden;
     background: var(--gradient-heritage);
     box-shadow: var(--shadow-card);
     transition: var(--transition-smooth);
+    transform: perspective(1000px) rotateX(0deg);
+    will-change: transform, box-shadow;
   }
 
   .museum-card:hover {
-    transform: translateY(-4px);
+    transform: perspective(1000px) rotateX(-2deg) translateY(-8px) scale(1.02);
     box-shadow: var(--shadow-museum);
+  }
+
+  .museum-card:active {
+    transform: perspective(1000px) rotateX(0deg) translateY(-2px) scale(0.98);
+    transition: var(--transition-spring);
   }
 
   .museum-frame {
@@ -253,11 +284,45 @@
   @keyframes slide-up-museum {
     from {
       opacity: 0;
-      transform: translateY(40px);
+      transform: translateY(40px) scale(0.95);
     }
     to {
       opacity: 1;
-      transform: translateY(0);
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  /* Enhanced fade-in with scale for mobile */
+  .fade-in-mobile {
+    animation: fade-in-mobile 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  }
+
+  @keyframes fade-in-mobile {
+    from {
+      opacity: 0;
+      transform: translateY(20px) scale(0.98);
+      filter: blur(2px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      filter: blur(0);
+    }
+  }
+
+  /* Smooth lazy loading animation */
+  .lazy-loading {
+    animation: lazy-loading 1.2s ease-in-out infinite;
+  }
+
+  @keyframes lazy-loading {
+    0%, 100% {
+      opacity: 0.4;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.8;
+      transform: scale(1.02);
     }
   }
 

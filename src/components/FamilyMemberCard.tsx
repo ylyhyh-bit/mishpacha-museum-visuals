@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, Heart, Users, Star } from 'lucide-react';
@@ -23,64 +23,119 @@ interface FamilyMemberCardProps {
   isHighlighted?: boolean;
   onHover?: (memberId: string | null) => void;
   searchTerm?: string;
+  lazy?: boolean;
+  animationDelay?: number;
 }
 
 export const FamilyMemberCard: React.FC<FamilyMemberCardProps> = ({
   member,
   isHighlighted = false,
   onHover,
-  searchTerm = ''
+  searchTerm = '',
+  lazy = false,
+  animationDelay = 0
 }) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
+  const [isVisible, setIsVisible] = useState(!lazy);
 
-  const highlightText = (text: string) => {
+  // Memoized text highlighting for performance
+  const highlightText = useCallback((text: string) => {
     if (!searchTerm) return text;
     const regex = new RegExp(`(${searchTerm})`, 'gi');
     return text.replace(regex, '<span class="search-highlight">$1</span>');
-  };
+  }, [searchTerm]);
 
-  const lifeSpan = member.birthYear 
-    ? `${member.birthYear}${member.deathYear ? ` - ${member.deathYear}` : ' - כיום'}`
-    : '';
+  // Memoized life span calculation
+  const lifeSpan = useMemo(() => {
+    return member.birthYear 
+      ? `${member.birthYear}${member.deathYear ? ` - ${member.deathYear}` : ' - כיום'}`
+      : '';
+  }, [member.birthYear, member.deathYear]);
+
+  // Optimized hover handlers
+  const handleMouseEnter = useCallback(() => {
+    onHover?.(member.id);
+  }, [onHover, member.id]);
+
+  const handleMouseLeave = useCallback(() => {
+    onHover?.(null);
+  }, [onHover]);
+
+  // Lazy loading intersection observer
+  React.useEffect(() => {
+    if (!lazy) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    const cardElement = document.getElementById(`card-${member.id}`);
+    if (cardElement) {
+      observer.observe(cardElement);
+    }
+
+    return () => observer.disconnect();
+  }, [lazy, member.id]);
+
+  if (!isVisible) {
+    return (
+      <div 
+        id={`card-${member.id}`}
+        className="w-full h-48 bg-muted/20 rounded-xl lazy-loading"
+      />
+    );
+  }
 
   return (
     <Card 
-      className={`museum-card relative overflow-hidden transition-all duration-500 ${
+      id={`card-${member.id}`}
+      className={`museum-card mobile-card gpu-accelerated relative overflow-hidden ${
         isHighlighted ? 'ring-2 ring-primary shadow-glow' : ''
-      }`}
-      onMouseEnter={() => onHover?.(member.id)}
-      onMouseLeave={() => onHover?.(null)}
+      } ${lazy ? 'fade-in-mobile' : 'slide-up-museum'}`}
+      style={{
+        animationDelay: `${animationDelay}ms`,
+        animationFillMode: 'both'
+      }}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
       {/* Heritage Frame */}
       <div className="museum-frame">
-        <div className="relative bg-card rounded-lg p-6">
+        <div className="relative bg-card rounded-lg p-4 sm:p-6 touch-target">
           {/* Cultural Ornament */}
           <div className="hebrew-ornament absolute top-2 left-2" />
           
-          {/* Photo Section */}
-          <div className="relative mb-4 flex justify-center">
+          {/* Photo Section - Responsive sizing */}
+          <div className="relative mb-3 sm:mb-4 flex justify-center">
             <div className="relative">
               {member.photo && !imageError ? (
-                <div className="relative overflow-hidden rounded-full w-24 h-24 bg-muted border-4 border-primary/20">
+                <div className="relative overflow-hidden rounded-full w-20 h-20 sm:w-24 sm:h-24 bg-muted border-2 sm:border-4 border-primary/20 transition-transform duration-300 hover:scale-105">
                   <img
                     src={member.photo}
                     alt={member.name}
-                    className={`w-full h-full object-cover transition-opacity duration-500 ${
-                      imageLoaded ? 'opacity-100' : 'opacity-0'
+                    className={`w-full h-full object-cover transition-all duration-500 ${
+                      imageLoaded ? 'opacity-100 filter-none' : 'opacity-0 blur-sm'
                     }`}
                     onLoad={() => setImageLoaded(true)}
                     onError={() => setImageError(true)}
+                    loading={lazy ? 'lazy' : 'eager'}
                   />
                   {!imageLoaded && (
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                    <div className="absolute inset-0 flex items-center justify-center bg-muted/50">
+                      <div className="w-6 h-6 sm:w-8 sm:h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
                     </div>
                   )}
                 </div>
               ) : (
-                <div className="w-24 h-24 rounded-full bg-gradient-museum flex items-center justify-center border-4 border-primary/20">
-                  <Users className="w-8 h-8 text-primary-foreground" />
+                <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-museum flex items-center justify-center border-2 sm:border-4 border-primary/20 transition-transform duration-300 hover:scale-105">
+                  <Users className="w-6 h-6 sm:w-8 sm:h-8 text-primary-foreground" />
                 </div>
               )}
             </div>
@@ -165,8 +220,11 @@ export const FamilyMemberCard: React.FC<FamilyMemberCardProps> = ({
             </div>
           )}
 
-          {/* Hover Effect Overlay */}
-          <div className="absolute inset-0 bg-gradient-museum opacity-0 transition-opacity duration-300 hover:opacity-10 rounded-lg" />
+          {/* Enhanced Hover Effect Overlay */}
+          <div className="absolute inset-0 bg-gradient-museum opacity-0 transition-all duration-500 hover:opacity-10 rounded-lg pointer-events-none" />
+          
+          {/* Mobile touch feedback */}
+          <div className="absolute inset-0 bg-primary/5 opacity-0 transition-opacity duration-150 active:opacity-100 rounded-lg sm:hidden" />
         </div>
       </div>
     </Card>

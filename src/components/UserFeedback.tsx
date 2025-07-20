@@ -18,9 +18,9 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   };
 
   return (
-    <div className="flex items-center gap-2 justify-center">
-      <Loader2 className={`animate-spin text-primary ${sizeClasses[size]}`} />
-      <span className="font-hebrew text-muted-foreground">{text}</span>
+    <div className="flex items-center gap-2 justify-center fade-in-mobile">
+      <Loader2 className={`animate-spin text-primary transition-all duration-300 ${sizeClasses[size]}`} />
+      <span className="font-hebrew text-muted-foreground transition-colors duration-300 pulse-hebrew">{text}</span>
     </div>
   );
 };
@@ -57,15 +57,15 @@ export const SearchProgress: React.FC<SearchProgressProps> = ({
   isSearching
 }) => {
   return (
-    <div className="flex items-center gap-3 p-3 bg-card rounded-lg border">
-      <Search className="w-4 h-4 text-primary" />
+    <div className="flex items-center gap-3 p-3 bg-card/95 backdrop-blur-sm rounded-lg border transition-all duration-300 hover:bg-card">
+      <Search className={`w-4 h-4 transition-colors duration-300 ${isSearching ? 'text-primary animate-pulse' : 'text-primary'}`} />
       <div className="flex-1">
         <div className="flex items-center gap-2">
-          <span className="font-hebrew text-sm">חיפוש: "{searchTerm}"</span>
+          <span className="font-hebrew text-sm transition-all duration-300">חיפוש: "{searchTerm}"</span>
           {isSearching && <Loader2 className="w-3 h-3 animate-spin text-primary" />}
         </div>
         {!isSearching && (
-          <div className="text-xs text-muted-foreground font-hebrew mt-1">
+          <div className="text-xs text-muted-foreground font-hebrew mt-1 transition-all duration-300 animate-fade-in">
             נמצאו {resultCount} תוצאות
           </div>
         )}
@@ -106,11 +106,11 @@ export const FeedbackAlert: React.FC<FeedbackAlertProps> = ({
   if (!isVisible) return null;
 
   return (
-    <Alert className={`${alertClasses[type]} fade-in-rtl`}>
-      <Icon className="h-4 w-4" />
+    <Alert className={`${alertClasses[type]} fade-in-rtl touch-target transition-all duration-500 hover:scale-102`}>
+      <Icon className="h-4 w-4 transition-transform duration-300 hover:scale-110" />
       <AlertDescription className="font-hebrew">
-        <div className="font-medium mb-1">{title}</div>
-        {description && <div className="text-sm opacity-90">{description}</div>}
+        <div className="font-medium mb-1 transition-colors duration-300">{title}</div>
+        {description && <div className="text-sm opacity-90 transition-opacity duration-300">{description}</div>}
       </AlertDescription>
     </Alert>
   );
