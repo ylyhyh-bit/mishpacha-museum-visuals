@@ -2,41 +2,70 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* Hebrew Family Museum Design System - All colors MUST be HSL */
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Hebrew:wght@300;400;500;600;700&family=Frank+Ruhl+Libre:wght@300;400;500;600;700&display=swap');
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Museum-inspired color palette */
+    --background: 35 15% 97%;
+    --foreground: 25 25% 15%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    /* Warm museum card backgrounds */
+    --card: 40 20% 98%;
+    --card-foreground: 25 25% 15%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    /* Heritage gold accents */
+    --primary: 45 85% 35%;
+    --primary-foreground: 0 0% 98%;
+    --primary-glow: 45 85% 55%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Elegant secondary tones */
+    --secondary: 35 25% 92%;
+    --secondary-foreground: 25 35% 25%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Sophisticated muted tones */
+    --muted: 35 15% 94%;
+    --muted-foreground: 25 15% 45%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Heritage accent colors */
+    --accent: 200 45% 88%;
+    --accent-foreground: 200 45% 25%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Cultural emphasis colors */
+    --cultural: 260 45% 65%;
+    --cultural-foreground: 0 0% 98%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    /* Museum border and frame colors */
+    --border: 35 20% 88%;
+    --input: 35 20% 92%;
+    --ring: 45 85% 35%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    /* Success and error states */
+    --success: 120 65% 45%;
+    --success-foreground: 0 0% 98%;
+    --destructive: 0 75% 55%;
+    --destructive-foreground: 0 0% 98%;
 
-    --radius: 0.5rem;
+    /* Heritage gradients */
+    --gradient-museum: linear-gradient(135deg, hsl(45 85% 35%), hsl(45 85% 55%));
+    --gradient-heritage: linear-gradient(45deg, hsl(35 25% 92%), hsl(40 20% 98%));
+    --gradient-cultural: linear-gradient(180deg, hsl(260 45% 65%), hsl(260 45% 75%));
+
+    /* Museum shadows and effects */
+    --shadow-museum: 0 8px 30px -8px hsl(45 85% 35% / 0.25);
+    --shadow-card: 0 4px 20px -4px hsl(25 25% 15% / 0.15);
+    --shadow-glow: 0 0 40px hsl(45 85% 55% / 0.3);
+
+    /* Heritage patterns */
+    --pattern-dots: radial-gradient(circle at 1px 1px, hsl(45 85% 35% / 0.15) 1px, transparent 0);
+
+    /* Smooth transitions */
+    --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-spring: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+    --radius: 0.75rem;
 
     --sidebar-background: 0 0% 98%;
 
@@ -100,6 +129,216 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-hebrew;
+    direction: rtl;
+  }
+
+  /* Hebrew typography */
+  .font-hebrew {
+    font-family: 'Noto Sans Hebrew', 'Frank Ruhl Libre', Arial, sans-serif;
+  }
+
+  .font-hebrew-serif {
+    font-family: 'Frank Ruhl Libre', 'Noto Sans Hebrew', Georgia, serif;
+  }
+
+  /* RTL support */
+  .rtl {
+    direction: rtl;
+  }
+
+  .ltr {
+    direction: ltr;
+  }
+}
+
+@layer components {
+  /* Museum card styles */
+  .museum-card {
+    @apply relative bg-card border border-border rounded-xl overflow-hidden;
+    background: var(--gradient-heritage);
+    box-shadow: var(--shadow-card);
+    transition: var(--transition-smooth);
+  }
+
+  .museum-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-museum);
+  }
+
+  .museum-frame {
+    @apply relative p-1;
+    background: var(--gradient-museum);
+    border-radius: calc(var(--radius) + 4px);
+  }
+
+  .museum-frame::before {
+    content: '';
+    @apply absolute inset-0 rounded-xl;
+    background: var(--pattern-dots);
+    background-size: 20px 20px;
+    opacity: 0.1;
+  }
+
+  /* Family tree connection lines */
+  .tree-line {
+    @apply absolute bg-primary;
+    transition: var(--transition-smooth);
+  }
+
+  .tree-line-vertical {
+    @apply w-0.5;
+  }
+
+  .tree-line-horizontal {
+    @apply h-0.5;
+  }
+
+  .tree-node {
+    @apply relative transform transition-all duration-500 ease-out;
+  }
+
+  .tree-node:hover {
+    transform: scale(1.05);
+    z-index: 10;
+  }
+
+  /* Cultural decorative elements */
+  .hebrew-ornament {
+    @apply relative;
+  }
+
+  .hebrew-ornament::before {
+    content: '✡';
+    @apply absolute text-primary opacity-20 text-lg;
+    top: -8px;
+    right: -8px;
+  }
+
+  /* Loading and feedback animations */
+  .pulse-hebrew {
+    animation: pulse-hebrew 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  @keyframes pulse-hebrew {
+    0%, 100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.7;
+      transform: scale(1.02);
+    }
+  }
+
+  .fade-in-rtl {
+    animation: fade-in-rtl 0.6s ease-out forwards;
+  }
+
+  @keyframes fade-in-rtl {
+    from {
+      opacity: 0;
+      transform: translateX(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .slide-up-museum {
+    animation: slide-up-museum 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  }
+
+  @keyframes slide-up-museum {
+    from {
+      opacity: 0;
+      transform: translateY(40px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Search highlight effects */
+  .search-highlight {
+    @apply bg-primary text-primary-foreground px-1 rounded;
+    animation: highlight-pulse 0.3s ease-out;
+  }
+
+  @keyframes highlight-pulse {
+    0% {
+      background-color: hsl(var(--primary) / 0.3);
+    }
+    50% {
+      background-color: hsl(var(--primary) / 0.8);
+    }
+    100% {
+      background-color: hsl(var(--primary) / 0.6);
+    }
+  }
+
+  /* Progress indicators */
+  .progress-hebrew {
+    @apply relative overflow-hidden bg-secondary rounded-full;
+  }
+
+  .progress-hebrew::after {
+    content: '';
+    @apply absolute top-0 right-0 h-full bg-gradient-to-l from-primary to-primary-glow;
+    animation: progress-hebrew 2s ease-in-out infinite;
+  }
+
+  @keyframes progress-hebrew {
+    0% {
+      width: 0%;
+      right: 100%;
+    }
+    50% {
+      width: 100%;
+      right: 0%;
+    }
+    100% {
+      width: 0%;
+      right: 0%;
+    }
+  }
+
+  /* Success and error states */
+  .success-feedback {
+    @apply bg-success text-success-foreground border-success;
+    animation: success-bounce 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+
+  @keyframes success-bounce {
+    0% {
+      transform: scale(0.8);
+      opacity: 0;
+    }
+    50% {
+      transform: scale(1.1);
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  .error-feedback {
+    @apply bg-destructive text-destructive-foreground border-destructive;
+    animation: error-shake 0.5s ease-in-out;
+  }
+
+  @keyframes error-shake {
+    0%, 100% {
+      transform: translateX(0);
+    }
+    25% {
+      transform: translateX(-4px);
+    }
+    75% {
+      transform: translateX(4px);
+    }
   }
 }
